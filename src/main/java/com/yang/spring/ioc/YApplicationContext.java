@@ -3,6 +3,9 @@ package com.yang.spring.ioc;
 import com.yang.annotation.YAutowired;
 import com.yang.annotation.YController;
 import com.yang.annotation.YService;
+import com.yang.spring.aop.YAdvisedSupport;
+import com.yang.spring.aop.YAopConfig;
+import com.yang.spring.aop.YJdkDynamicAopProxy;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -111,11 +114,32 @@ public class YApplicationContext {
             Class<?> aClass = Class.forName(beanDefinition.getBeanClassName());
             instance = aClass.newInstance();
 
+            //AOP
+            //封装配置类信息、对象、类对象
+            YAdvisedSupport config = instanceAopConfig(beanDefinition);
+            config.setTarget(instance);
+            config.setTargetClass(aClass);
+            //判断是否需要生成代理类
+            if(config.pintCutMatch()){
+                instance = new YJdkDynamicAopProxy(config).getProxy();
+            }
             factoryObjectInstanceCache.put(beanDefinition.getFactoryBeanName(), instance);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return instance;
+    }
+
+    //aop封装配置文件信息
+    private YAdvisedSupport instanceAopConfig(YBeanDefinition beanDefinition) {
+        YAopConfig aopConfig = new YAopConfig();
+        aopConfig.setPointCut(reader.getConfig().getProperty("pointCut"));
+        aopConfig.setAspectClass(reader.getConfig().getProperty("aspectClass"));
+        aopConfig.setAspectBefore(reader.getConfig().getProperty("aspectBefore"));
+        aopConfig.setAspectAfter(reader.getConfig().getProperty("aspectAfter"));
+        aopConfig.setAspectAfterThrow(reader.getConfig().getProperty("aspectAfterThrow"));
+        aopConfig.setAspectAfterThrowingName(reader.getConfig().getProperty("aspectAfterThrowingName"));
+        return new YAdvisedSupport(aopConfig);
     }
 
     public Object getBean(Class<?> className) {
@@ -138,7 +162,7 @@ public class YApplicationContext {
     }
 
     //获取页面模板路径
-    public String getConfig(){
-       return reader.getConfig();
+    public String getHtmlConfig() {
+        return reader.getConfig().getProperty("templateRoot");
     }
 }

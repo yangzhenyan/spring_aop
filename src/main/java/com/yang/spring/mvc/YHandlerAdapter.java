@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author yzy
  * @date 2020/9/13
- * @describe
+ * @describe 动态参数适配器
  */
 public class YHandlerAdapter {
 

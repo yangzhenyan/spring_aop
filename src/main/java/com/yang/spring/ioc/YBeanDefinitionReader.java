@@ -101,8 +101,8 @@ public class YBeanDefinitionReader {
         return letters + simpleName.substring(1);
     }
 
-    //获取页面模板路径
-    public String getConfig() {
-        return properties.getProperty("templateRoot");
+    //获取properties文件流
+    public Properties getConfig() {
+        return this.properties;
     }
 }

@@ -133,7 +133,7 @@ public class YzyDispatcherServlet extends HttpServlet {
 
     private void initViewResolvers(YApplicationContext context) {
         //一个页面对应一个视图解析器
-        String templateRoot = context.getConfig();
+        String templateRoot = context.getHtmlConfig();
         URL resource = this.getClass().getClassLoader().getResource(templateRoot);
 
         File files = new File(resource.getFile());
